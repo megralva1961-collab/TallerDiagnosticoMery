@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Reporte de Autobuses</title>
+    <link rel="stylesheet" href="estilos.css">
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <header class="encabezado">
+        <div class="contenedor">
+            <h1>Sistema de Reporte de Autobuses</h1>
+            <p>Registro y estadísticas de los viejes diarios</p>
+        </div>
+    </header>
+
+    <main class="contenedor">
+        <section class="panel" aria-labelledby="titulo-registro">
+            <h2 id="titulo-registro">Registrar un viaje</h2>
+            <form id="formulario-viaje">
+                <div class="campo">
+                    <label for="tipo-autobus">Tipo de autobús</label>
+                    <select id="tipo-autobus" name="tipo" required>
+                        <option value="P">Pequeño - 20 pasajeros</option>
+                        <option value="G">Grande - 60 pasajeros</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label for="cantidad-pasajeros">Cantidad de pasajeros</label>
+                    <input 
+                        type="number" 
+                        id="cantidad-pasajeros" 
+                        name="pasajeros" 
+                        min="0" 
+                        max="20" 
+                        step="1" 
+                        value="10" 
+                        required
+                    >
+                    <small id="ayuda-capacidad">Capacidad máxima: 20 pasajeros</small>
+                </div>
+
+                <button type="submit">Registrar viaje</button>
+            </form>
+
+            <p id="mensaje" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="panel" aria-labelledby="titulo-estadisticas">
+            <h2 id="titulo-estadisticas">Estadísticas del día</h2>
+
+            <div class="tarjetas">
+                <article class="tarjeta">
+                    <h3>Viajes Pequeños</h3>
+                    <p id="viajes-pequenos">0</p>
+                </article>
+                <article class="tarjeta">
+                    <h3>Pasajeros Pequeños</h3>
+                    <p id="pasajeros-pequenos">0</p>
+                </article>
+                <article class="tarjeta">
+                    <h3>Promedio Pequeños</h3>
+                    <p id="promedio-pequenos">0</p>
+                </article>
+                <article class="tarjeta">
+                    <h3>Viajes grandes</h3>
+                    <p id="viajes-grandes">0</p>
+                </article>
+                <article class="tarjeta">
+                    <h3>Pasajeros grandes</h3>
+                    <p id="pasajeros-grandes">0</p>
+                </article>
+                <article class="tarjeta">
+                    <h3>Promedio grandes</h3>
+                    <p id="promedio-grandes">0</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="panel" aria-labelledby="titulo-reporte">
+            <h2 id="titulo-reporte">Reporte de viajes</h2>
+
+            <div class="tabla-contenedor">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Número</th>
+                            <th scope="col">Tipo</th>
+                            <th scope="col">Pasajeros</th>
+                            <th scope="col">Capacidad</th>
+                            <th scope="col">Ocupación</th>
+                            <th scope="col">Resultado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-viajes">
+                        <tr>
+                            <td colspan="6">No hay viajes registrados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel" aria-labelledby="titulo-resumen">
+            <h2 id="titulo-resumen">Resumen general</h2>
+
+            <p>
+                Total de viajes:
+                <strong id="total-viajes">0</strong>
+            </p>
+            <p>
+                Total de pasajeros:
+                <strong id="total-pasajeros">0</strong>
+            </p>
+            <p>
+                Viajes con ganancia:
+                <strong id="total-ganancia">0</strong>
+            </p>
+            <p>
+                Viajes con pérdida:
+                <strong id="total-perdida">0</strong>
+            </p>
+
+            <button type="submit" id="limpiar-viajes" class="boton-secundario">
+                Eliminar todos los viajes
+            </button>
+        </section>
+    </main>
+
+    <footer class="pie">
+        <p>Actividad de Diagnóstico Académico - Móvil I</p>
+        <p>Programación en JavaScript y desarrollo web</p>
+    </footer>
+</body>
+</html>
