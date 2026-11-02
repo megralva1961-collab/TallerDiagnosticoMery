@@ -1,0 +1,17 @@
+{
+    "name":"taller-autobuses",
+    "version": "1.0.0",
+    "description": "Sistema de registro y reporte de viaje de autobuses",
+    "main": "servidor.js",
+    "scripts": {
+        "start": "node servidor.js",
+        "dev": "node --watch servidor.js"
+    },
+    "keywords": [
+        "javascript",
+        "autobuses",
+        "desarrollo-web"
+    ],
+    "autor": "Mery G. Alvarado J.",
+    "license": "ISC"
+}
