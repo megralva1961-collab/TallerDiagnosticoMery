@@ -8,7 +8,8 @@ const mensaje = document.getElementById("mensaje");
 const tablaViajes = document.getElementById("tabla-viajes");
 const botonLimpiar = document.getElementById("limpiar-viajes");
 
-let viajes =[]
+let viajes = [];
+
 const capacidades = {
     P: 20,
     G: 60
@@ -18,12 +19,13 @@ selectorTipo.addEventListener("change", actualizarCapacidad);
 formulario.addEventListener("submit", registrarViaje);
 botonLimpiar.addEventListener("click", eliminarViajes);
 
+
 function obtenerCapacidad(tipo){
     return capacidades[tipo];
 }
 
 const obtenerNombreTipo = (tipo) =>
-    tipo === "p" ? "pequeño" : "Grande";
+    tipo === "P" ? "Pequeño" : "Grande";
 
 function clasificarViaje(tipo, pasajeros){
     const capacidad = obtenerCapacidad(tipo);
@@ -33,6 +35,7 @@ function clasificarViaje(tipo, pasajeros){
         : "Pérdida";
 }
 
+
 function actualizarCapacidad() {
     const tipo = selectorTipo.value;
     const capacidad = obtenerCapacidad(tipo);
@@ -40,23 +43,23 @@ function actualizarCapacidad() {
     entradaPasajeros.max = capacidad;
     entradaPasajeros.value = Math.min(
         Number(entradaPasajeros.value) || 0,
-        capacidad
+            capacidad
     );
 
-    ayudaCapacidad.textContent = `capacidad máxima: ${capacidad} pasajeros.`;
+    ayudaCapacidad.textContent = `Capacidad máxima: ${capacidad} pasajeros.`;
 }
 
-async function consultarviajes(){
+async function consultarViajes(){
     try {
-        const respuesta = await fetch("/api/viajes");
-
-        if(!respuesta.ok){
+       const respuesta = await fetch("/api/viajes");
+       
+       if(!respuesta.ok){
             throw new Error("No fue posible consultar los viajes.");
-        }
+       }
 
-        viajes = await respuesta.json();
+       viajes = await respuesta.json();
 
-        renderizarAplicacion();
+       renderizarAplicacion();
 
     } catch (error) {
         mostrarMensaje(error.message, true);
@@ -68,11 +71,11 @@ async function registrarViaje(evento){
 
     const tipo = selectorTipo.value;
     const pasajeros = Number(entradaPasajeros.value);
-    
+
     const capacidad = obtenerCapacidad(tipo);
 
     if (!Number.isInteger(pasajeros) || pasajeros < 0 || pasajeros > capacidad) {
-        mostrarMensaje(`Ingresa un número entre 0 y ${capacidad}.` , true);
+        mostrarMensaje(`Ingresa un número entre 0 y ${capacidad}.`, true);
         return;
     }
 
@@ -82,7 +85,7 @@ async function registrarViaje(evento){
     };
 
     try {
-        const respuesta = await fetch("/api/viaje", {
+        const respuesta = await fetch("/api/viajes", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -91,29 +94,30 @@ async function registrarViaje(evento){
         });
 
         const resultado = await respuesta.json();
-         if (!respuesta.ok) {
-            throw new error(resultado.error || "No se pudo registrar el viaje.");
-         }
 
-         viajes = [...viajes, resultado];
-        
-         renderizarAplicacion();
-       
-         mostrarMensaje(
-            `Viaje registrado correctamente. Resultado: ${clasificarViaje(tipo,pasajeros)}.`
-        );
-            
-            entradaPasajeros.value = "";
-
-        }catch (error) {
-
-            mostrarMensaje(error.message, true);
+        if (!respuesta.ok) {
+            throw new Error(resultado.error || "No se pudo registrar el viaje.");
         }
+
+        viajes = [...viajes, resultado];
+
+        renderizarAplicacion();
+
+        mostrarMensaje(
+            `Viaje registrado correctamente. Resultado: ${clasificarViaje(tipo, pasajeros)}.`
+        );
+
+        entradaPasajeros.value = "";
+
+    } catch (error) {
+        mostrarMensaje(error.message, true);
+    }
 }
 
-function calcularEstadisticas(){
+
+function calcularEstadisticas() {
     const viajesPequenos = viajes.filter(
-        ({tipo}) => tipo === "p"
+        ({tipo}) => tipo === "P"
     );
 
     const viajesGrandes = viajes.filter(
@@ -124,12 +128,16 @@ function calcularEstadisticas(){
         (total, {pasajeros}) => total + pasajeros, 0
     );
 
+    const pasajerosGrandes = viajesGrandes.reduce(
+        (total, {pasajeros}) => total + pasajeros, 0
+    );
+
     const promedioPequenos = viajesPequenos.length > 0
         ? pasajerosPequenos / viajesPequenos.length
         : 0;
     
-    const promedioGrandes =viajesGrandes.length > 0
-        ? pasajerosGrandes /viajesGrandes.length
+    const promedioGrandes = viajesGrandes.length > 0
+        ? pasajerosPequenos / viajesGrandes.length
         : 0;
 
     const totalPasajeros = viajes.reduce(
@@ -139,7 +147,7 @@ function calcularEstadisticas(){
     const totalGanancia = viajes.filter(
         ({tipo, pasajeros}) =>
             clasificarViaje(tipo, pasajeros) === "Ganancia"
-        ).length;
+    ).length;
 
     const totalPerdida = viajes.length - totalGanancia;
 
@@ -158,71 +166,73 @@ function calcularEstadisticas(){
 }
 
 function renderizarEstadisticas(){
-    const estadisticas = calcularestadistica();
+    const estadisticas = calcularEstadisticas();
 
-    const{
+    const {
         cantidadPequenos,
         pasajerosPequenos,
         promedioPequenos,
         cantidadGrandes,
         pasajerosGrandes,
-        promediograndes,
+        promedioGrandes,
         totalViajes,
         totalPasajeros,
         totalGanancia,
-        totalperdida
-        } = estadisticas;
+        totalPerdida
+    } = estadisticas;
 
-        document.getElementById("viajes-pequeños").textContent = cantidadPequenos;
-        document.getElementById("pasajeros-pequenos").textContent = pasajerosPequenos;
-        document.getElementById("promedio-pequeños").textContent = promedioPequenos;
-        document.getElementById("viajes-grandes").textContent = viajesGrandes;
-        document.getElementById("pasajeros-grandes").textContent = pasajerosGrandes;
-        document.getElementById("promedio-grandes").textContent = promedioGrandes;
-        document.getElementById("total-viajes").textContent = totalViajes;
-        document.getElementById("total-pasajeros").textContent = totalPasajerso;  document.getElementById("viajes-pequeños").textContent = cantidadPequenos;
-        document.getElementById("total-ganancia").textContent = totalGanancia;
-        document.getElementById("total-perdida").textContent = totalPerdida;
+    document.getElementById("viajes-pequenos").textContent = cantidadPequenos;
+    document.getElementById("pasajeros-pequenos").textContent = pasajerosPequenos;
+    document.getElementById("promedio-pequenos").textContent = promedioPequenos.toFixed(2);
+    document.getElementById("viajes-grandes").textContent = cantidadGrandes;
+    document.getElementById("pasajeros-grandes").textContent = pasajerosGrandes;
+    document.getElementById("promedio-grandes").textContent = promedioGrandes.toFixed(2);
+    document.getElementById("total-viajes").textContent = totalViajes;
+    document.getElementById("total-pasajeros").textContent = totalPasajeros;
+    document.getElementById("total-ganancia").textContent = totalGanancia;
+    document.getElementById("total-perdida").textContent = totalPerdida;
 
 }
-function renderizarTabla(){
+
+function renderizarTabla() {
     if (viajes.length === 0) {
-        tablaViajes.innerHTML =
-           <tr>
+        tablaViajes.innerHTML = `
+            <tr>
                 <td coldspan="6">No hay viajes registrados.</td>
-           </tr>
-        ;
+            </tr>
+        `;
+
         return;
     }
 
-    const filas = viajes.map((viajes, indice) =>{
+    const filas = viajes.map((viajes, indice) => {
         const { tipo, pasajeros } = viajes;
 
         const capacidad = obtenerCapacidad(tipo);
         const resultado = clasificarViaje(tipo, pasajeros);
-        const ocupaction = (pasajeros / capacidad) * 100;
+        const ocupacion = (pasajeros / capacidad) * 100;
 
         const claseResultado = resultado === "Ganancia"
             ? "resultado-ganancia"
             : "resultado-perdida";
-
-        return
-        <tr>
-            <td>${indice + 1}</td>
-            <td>${obtenerNombreTipo(tipo)}</td>
-            <td>${pasajerosPequenos}</td>
-            <td>${obtenerCapacidad}</td>
-            <td>${ocupaction.toFixed(1)}%</td>
-            <td class="${claseResultado}">${resultado}</td>
-        </tr>
-        ;
+        
+        return `
+            <tr>
+                <td>${indice + 1}</td>
+                <td>${obtenerNombreTipo(tipo)}</td>
+                <td>${pasajeros}</td>
+                <td>${capacidad}</td>
+                <td>${ocupacion.toFixed(1)}%</td>
+                <td class="${claseResultado}">${resultado}</td>
+            </tr>
+        `;
     });
 
     tablaViajes.innerHTML = filas.join("");
-
 }
 
-function renderizarAplication() {
+
+function renderizarAplicacion() {
     renderizarTabla();
     renderizarEstadisticas();
 }
@@ -245,13 +255,14 @@ async function eliminarViajes() {
         const respuesta = await fetch("/api/viajes", {
             method: "DELETE"
         });
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
         const resultado = await respuesta.json();
 
         if (!respuesta.ok) {
             throw new Error(
                 resultado.error || "No fue posible eliminar los viajes."
             );
+            
         }
 
         viajes = [];
@@ -259,11 +270,11 @@ async function eliminarViajes() {
         renderizarAplicacion();
 
         mostrarMensaje("Todos los viajes fueron eliminados.");
-
     } catch (error) {
         mostrarMensaje(error.message, true);
     }
 }
+
 
 function mostrarMensaje(texto, esError = false){
     mensaje.textContent = texto;
@@ -271,6 +282,4 @@ function mostrarMensaje(texto, esError = false){
 }
 
 actualizarCapacidad();
-consultarviajes();
-
-
+consultarViajes();
